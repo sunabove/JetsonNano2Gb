@@ -32,8 +32,9 @@ cap = cv.VideoCapture( gstreamer_pipeline(camera_id=0, display_width=640, displa
 
 #cap = cv.VideoCapture(0)
 
-for i in range( 100 ) :
+for i in range( 30 ) :
     # Capture frame-by-frame
+    print( f"{i}", flush=True )
     ret, frame = cap.read()
 
     # Display the resulting frame

@@ -2,17 +2,11 @@
 import cv2 as cv
 from time import sleep
 
-print( "Hello ..." )
+print( "Hello .... " )
 
-def gstreamer_pipeline(
-        camera_id,
-        capture_width=1920,
-        capture_height=1080,
-        display_width=1920,
-        display_height=1080,
-        framerate=30,
-        flip_method=0,
-    ):
+def gstream_pipeline(
+        camera_id, capture_width=1920, capture_height=1080,
+        display_width=1920, display_height=1080, framerate=30, flip_method=0, ):
     return (
             "nvarguscamerasrc sensor-id=%d ! "
             "video/x-raw(memory:NVMM), "
@@ -28,18 +22,18 @@ def gstreamer_pipeline(
             )
     )
    
-cap = cv.VideoCapture( gstreamer_pipeline(camera_id=0, display_width=640, display_height=480), cv.CAP_GSTREAMER)
+cap = cv.VideoCapture( gstream_pipeline(camera_id=0, capture_width=640, capture_height=480, display_width=640, display_height=480), cv.CAP_GSTREAMER)
 
 #cap = cv.VideoCapture(0)
 
-for i in range( 30 ) :
+for i in range( 100 ) :
     # Capture frame-by-frame
-    print( f"{i}", flush=True )
+    print( f"{i}", end=",", flush=True )
     ret, frame = cap.read()
 
     # Display the resulting frame
     cv.imshow('frame', frame)
-    sleep( 0.01 )
+    #sleep( 0.01 )
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 

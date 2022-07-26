@@ -1,16 +1,24 @@
 from time import sleep
 from adafruit_servokit import ServoKit
+import numpy as np
 
-print( "Hello..." )
+print( "Hello ..." )
 kit = ServoKit(channels=16, address=0x40)
 
-print( "Ready to move" )
+print( "Ready to move ..." )
 
-steering_motor = kit.continuous_servo[ 0 ]
-throttle_motor = kit.continuous_servo[ 1 ]
+throttle_motor = kit.continuous_servo[ 0 ]
+steering_motor = kit.continuous_servo[ 1 ]
 
-steering_motor.throttle = 1
-throttle_motor.throttle = 1
+motor = throttle_motor
+for throttle in np.arange( -0.5, 0.5, 0.1 ) :
+    print( f"throttle = {throttle}", flush=True )
+    motor.throttle = throttle
+    sleep( 1 )
+
+motor.throttle = -1.0 
+
+#throttle_motor.throttle = 1
 
 sleep( 2 )
 

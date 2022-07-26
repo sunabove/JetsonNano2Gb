@@ -1,25 +1,36 @@
 from time import sleep
 from adafruit_servokit import ServoKit
+import board, busio
 import numpy as np
 
 print( "Hello ..." )
-kit = ServoKit(channels=16, address=0x40)
 
-print( "Ready to move ..." )
+print("Initializing ServoKit")
+kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
+print("Done initializing")
 
-throttle_motor = kit.continuous_servo[ 0 ]
-steering_motor = kit.continuous_servo[ 1 ]
+print( "Ready to move ..." ) 
 
-motor = throttle_motor
-for throttle in np.arange( -0.5, 0.5, 0.1 ) :
-    print( f"throttle = {throttle}", flush=True )
-    motor.throttle = throttle
-    sleep( 1 )
+servo = kit.servo[1]
 
-motor.throttle = -1.0 
+duration = 0.2
 
-#throttle_motor.throttle = 1
+min_angle = 45 
+max_angle = 140
 
+for angle in range( min_angle, max_angle, 1 ) : 
+    print( f"servo: angle = {angle}", flush=True )
+    servo.angle = angle
+    sleep( duration )
+pass
+
+for angle in range( max_angle, min_angle, -1 ) : 
+    print( f"servo: angle = {angle}", flush=True )
+    servo.angle = angle
+    sleep( duration )
+pass
+
+servo.angle = 0
 sleep( 2 )
 
 print( "Good bye!" )

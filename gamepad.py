@@ -6,8 +6,6 @@
 from adafruit_servokit import ServoKit
 import board, busio
 from time import sleep
-#from approxeng.input.selectbinder import ControllerResource
-
 
 # On the Jetson Nano
 # Bus 0 (pins 28,27) is board SCL_1, SDA_1 in the jetson board definition file
@@ -21,7 +19,7 @@ kit = ServoKit(channels=16, i2c=i2c_bus0)
 # kit[1] is the top servo
 print("Done initializing")
 
-servo = kit.servo[1]
+servo = kit.servo[0]
 
 duration = 0.2
 
@@ -37,8 +35,10 @@ for degree in range(180, 0, -1) :
     sleep( duration )
 pass
 
+from approxeng.input.selectbinder import ControllerResource
+
 last_presses = None
-while False :
+while True :
        with ControllerResource() as joystick:
            print(type(joystick).__name__)
            while joystick.connected:

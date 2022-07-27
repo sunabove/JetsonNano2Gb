@@ -1,36 +1,40 @@
-from time import sleep
 from adafruit_servokit import ServoKit
-import board, busio
-import numpy as np
+import board, busio, numpy as np
+from time import sleep
 
 print( "Hello ..." )
 
-print("Initializing ServoKit")
+print("Initializing ServoKit ...")
 kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
-print("Done initializing")
+print("Done initializing servokit.")
 
-print( "Ready to move ..." ) 
-
-servo = kit.servo[1]
+servo = kit.servo[0]
 
 duration = 0.2
 
 min_angle = 45 
-max_angle = 140
+max_angle = 115
+cen_angle = int( (max_angle + min_angle)/2 )
 
-for angle in range( min_angle, max_angle, 1 ) : 
+# turn to the left
+for angle in range( cen_angle, max_angle + 1, 1 ) : 
     print( f"servo: angle = {angle}", flush=True )
     servo.angle = angle
     sleep( duration )
 pass
 
-for angle in range( max_angle, min_angle, -1 ) : 
+# turn to the right
+for angle in range( max_angle, min_angle -1, -1 ) : 
     print( f"servo: angle = {angle}", flush=True )
     servo.angle = angle
     sleep( duration )
 pass
 
-servo.angle = 0
-sleep( 2 )
+# turn to the center
+for angle in range( min_angle, cen_angle + 1, 1 ) : 
+    print( f"servo: angle = {angle}", flush=True )
+    servo.angle = angle
+    sleep( duration )
+pass
 
 print( "Good bye!" )

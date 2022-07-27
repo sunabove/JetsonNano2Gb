@@ -11,16 +11,16 @@ from time import sleep
 # Bus 0 (pins 28,27) is board SCL_1, SDA_1 in the jetson board definition file
 # Bus 1 (pins 5, 3) is board SCL, SDA in the jetson definition file
 # Default is to Bus 1; We are using Bus 0, so we need to construct the busio first ...
-print("Initializing ServoKit")
-kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
-# kit[0] is the bottom servo
-# kit[1] is the top servo
-print("Done initializing")
-
-servo = kit.servo[0]
-
 do_servo_test = False 
 if do_servo_test : 
+    print("Initializing ServoKit ...")
+    kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
+    # kit[0] is the bottom servo
+    # kit[1] is the top servo
+    print("Done initializing.")
+
+    servo = kit.servo[0]
+
     duration = 0.2
 
     for degree in range(0, 180) :

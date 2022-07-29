@@ -57,7 +57,7 @@ def service() :
         h = oled_disp.height
 
         # open lena image
-        img_path = path.join( path.dirname(path.realpath(__file__)), 'lena.png' )        
+        img_path = path.join( path.dirname(path.realpath(__file__)), 'lena.png' )
         print( f"img_path = {img_path}" )         
         lena = Image.open( img_path )
 

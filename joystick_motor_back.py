@@ -129,7 +129,7 @@ def joystick_control() :
                 elif code == 'ABS_Y' :
                     #state = min( 127, state )
                     motor_throttle = (max_throttle - min_throttle)*(127 - state)/127 + min_throttle
-                    print( f", Throttle = {motor_throttle:.3f}" )
+                    print( f", Throttle = {motor_throttle:.3f}, curr = {motor.throttle:.3f}" )
                 else :
                     print()
                 pass

@@ -13,7 +13,10 @@ oled_alive = True
 
 oled_disp = SSD1306()
 
+oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 22, encoding="unic") 
+
 def stop() :
+    global oled_alive
     oled_alive = 0
 
     w = oled_disp.width
@@ -22,18 +25,16 @@ def stop() :
     image = Image.new('1', [w, h], "WHITE")
     draw = ImageDraw.Draw(image)
 
-    font = ImageFont.truetype("arial.ttf", 28, encoding="unic")
-
     text = "SHUTDOWN"
 
-    tw = font.getsize(text)[0]
+    tw = oled_font.getsize(text)[0]
 
     # text center align
     x = (w - tw)//2
     y = 4
     
     draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
-    draw.text( [x, y], text, font = font, fill = 0) 
+    draw.text( [x, y], text, font = oled_font, fill = 0) 
     
     oled_disp.ShowImage( oled_disp.getbuffer(image) )
 
@@ -55,8 +56,6 @@ def service() :
         w = oled_disp.width
         h = oled_disp.height
 
-        font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 22, encoding="unic") 
-        
         # open lena image
         img_path = path.join( path.dirname(path.realpath(__file__)), 'lena.png' )        
         print( f"img_path = {img_path}" )         
@@ -148,14 +147,14 @@ def service() :
 
             if text : 
                 # text width
-                tw = font.getsize(text)[0]
+                tw = oled_font.getsize(text)[0]
 
                 # text center align
                 x = (w - tw)//2
                 y = 4
                 
                 draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
-                draw.text( [x, y], text, font = font, fill = 0) 
+                draw.text( [x, y], text, font = oled_font, fill = 0) 
                 
                 oled_disp.ShowImage( oled_disp.getbuffer(image) )
             pass

@@ -13,7 +13,7 @@ oled_alive = True
 
 oled_disp = SSD1306()
 
-oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 22, encoding="unic") 
+oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 16, encoding="unic") 
 
 def stop() :
     global oled_alive
@@ -97,7 +97,15 @@ def service() :
         
                 text = f"{hostname}"
             elif idx == 2 : # ip address
-                ipaddr = os.popen("hostname -I").read().strip().split()[-1]
+                hostnames = os.popen("hostname -I").read().strip().split()
+                ipaddr = hostnames[0]
+
+                for host in hostnames :
+                    if host.startswith( "192." ):
+                        ipaddr = host
+                        break
+                    pass
+                pass
         
                 text = f"{ipaddr}"
             elif idx == 3 : # disk usage
@@ -109,15 +117,15 @@ def service() :
                 free //= (2**30)
                 pct = used*100/total
 
-                text = f"Disk : {pct:02.1f} %"
+                text = f"Disk: {pct:02.1f}%"
             elif idx == 4 : # CPU
                 pct = psutil.cpu_percent()
 
-                text = f"CPU : {pct:02.1f} %"
+                text = f"CPU: {pct:02.1f}%"
             elif idx == 5 : # RAM
                 pct = psutil.virtual_memory()[2] 
 
-                text = f"RAM : {pct:02.1f} %"
+                text = f"RAM: {pct:02.1f}%"
             elif idx == 6 : # LENA IMAGE
                 # show image by scrolling up by n pixel
                 for y in range( 0, lena.size[1], 4 ) :
@@ -147,11 +155,13 @@ def service() :
 
             if text : 
                 # text width
-                tw = oled_font.getsize(text)[0]
+                text_size = oled_font.getsize(text)
+                tw = text_size[0]
+                th = text_size[1]
 
                 # text center align
                 x = (w - tw)//2
-                y = 4
+                y = (h - th)//2
                 
                 draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
                 draw.text( [x, y], text, font = oled_font, fill = 0) 

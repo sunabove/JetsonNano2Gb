@@ -124,7 +124,7 @@ def joystick_control() :
                 idx += 1
 
                 print( f"[{idx:04d}] CODE: {e.code}, STATE: {e.state}", end = "" )
-                if code == 'ABS_Z' :
+                if code in ( 'ABS_Z', 'ABS_X' ) :
                     global min_angle, max_angle, servo_angle
                     angle = (max_angle - min_angle)*(255- state)/255 + min_angle
                     angle = int( angle )
@@ -206,6 +206,7 @@ threads.append( motor_thread )
 for thread in threads :
     thread.start()
 pass
+
 
 signal.signal(signal.SIGINT, signal_handler)
 signal.pause()

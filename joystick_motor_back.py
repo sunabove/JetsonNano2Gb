@@ -1,4 +1,3 @@
-from operator import is_
 import inputs, signal, sys
 import board, busio, numpy as np
 from time import sleep
@@ -12,12 +11,9 @@ def signal_handler(sig, frame):
     print( "Move joystick to quit!")
     global is_running
     is_running = False
-    sleep( 1 )
-    motor.throttle = -1.0
-    sys.exit( 0 )
 pass
 
-print("Initializing ServoKit .... ")
+print("Initializing ServoKit ...")
 kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
 print("Done initializing servokit.")
 
@@ -32,9 +28,9 @@ max_angle = 115
 cen_angle = int( (max_angle + min_angle)/2 )
 
 servo_angle = cen_angle
-throttle_inc_ratio = 0
-max_throttle = 0.3
-min_throttle = -0.5
+motor_throttle = -1.0
+max_throttle = 0.5
+min_throttle = -0.1
 
 def servo_init() :
     print( "Initializing servo angles ..." )
@@ -113,7 +109,7 @@ def joystick_control() :
 
     print( "Power on the joystick and press any key!" )
     idx = 0 
-    global is_running, servo_angle, throttle_inc_ratio
+    global servo_angle, motor_throttle
 
     while is_running :
         events = inputs.get_gamepad()
@@ -131,10 +127,9 @@ def joystick_control() :
                     servo_angle = angle
                     print( f", servo angle = {servo_angle}" )
                 elif code == 'ABS_Y' :
-                    throttle_inc_ratio = (127-state)/127
-                    print( f", throttle_inc_ratio = {throttle_inc_ratio:.3f}, throttle = {motor.throttle:.3f}" )
-                elif code in ( 'BTN_SELECT' , 'BTN_MODE', 'BTN_START' ) :
-                    is_running = False 
+                    #state = min( 127, state )
+                    motor_throttle = (max_throttle - min_throttle)*(127 - state)/127 + min_throttle
+                    print( f", Throttle = {motor_throttle:.3f}" )
                 else :
                     print()
                 pass
@@ -144,37 +139,27 @@ def joystick_control() :
 pass
 
 def servo_control() :
-    global is_running
-
     duration = servo_duration
     while is_running :
-        diff = servo_angle - servo.angle 
-        if abs( diff ) <= 1 :
-            sleep( 2*duration ) 
+        sgn = np.sign( servo_angle - servo.angle )
+        if sgn == 0 :
+            sleep( 2*duration )
         else :
-            angle = servo.angle + 1.0*np.sign( diff )
-            angle = angle%360
-            angle = min( 180, max( 0, angle ) )
-            #print( f"angle = {angle}, increment = {diff}" )
-            servo.angle = angle
+            servo.angle += sgn
             sleep( duration )
         pass 
     pass
 pass
 
 def motor_control() :
-    global is_running
-
-    duration = 0.1
+    duration = motor_duration
     while is_running :
-        if abs( throttle_inc_ratio ) < 0.001 :
+        diff = motor_throttle - motor.throttle
+        if abs( diff ) < 0.001 :
             sleep( 2*duration )
         else :
-            throttle = motor.throttle + 0.1*throttle_inc_ratio
-            throttle = max( min_throttle, min( max_throttle , throttle ) )
+            throttle = motor.throttle + diff/4
             throttle = max( -1.0, min( 1.0 , throttle ) )
-
-            #print( f"throttle = {throttle:.3f}, throttle_inc_ratio = {throttle_inc_ratio:.3f}" )
             motor.throttle = throttle
             sleep( duration )
         pass 

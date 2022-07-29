@@ -8,22 +8,12 @@ global thread_lock
 thread_lock = threading.Lock() 
 
 def gstream_pipeline(
-        camera_id=0, capture_width=1920, capture_height=1080,
-        display_width=1920, display_height=1080, framerate=30, flip_method=0, ):
-    return (
-            "nvarguscamerasrc sensor-id=%d ! video/x-raw(memory:NVMM), "
-            "width=(int)%d, height=(int)%d, format=(string)NV12, framerate=(fraction)%d/1 ! "
-            "nvvidconv flip-method=%d ! video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
-            "videoconvert ! video/x-raw, format=(string)BGR ! appsink max-buffers=1 drop=True"
-            % ( camera_id, capture_width, capture_height,
-                    framerate, flip_method,
-                    display_width, display_height,
-            )
-    )
+        camera_id=0, width=1920, height=1080, framerate=10, flip_method=0 ):
+    return f"nvarguscamerasrc sensor-id={camera_id} ! video/x-raw(memory:NVMM), width=(int){width}, height=(int){height}, format=(string)NV12, framerate=(fraction){framerate}/1 ! nvvidconv flip-method={flip_method} ! video/x-raw, width=(int){width}, height=(int){height}, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink max-buffers=1 drop=True"  
 
 app = Flask(__name__)
-GSTREAMER_PIPELINE = gstream_pipeline(capture_width=640, capture_height=480, display_width=640, display_height=480) 
-GSTREAMER_PIPELINE = gstream_pipeline(capture_width=960, capture_height=720, display_width=960, display_height=720) 
+size_factor = 4
+GSTREAMER_PIPELINE = gstream_pipeline(width=1280//size_factor, height=960//size_factor) 
 video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
 
 def capture_frames():

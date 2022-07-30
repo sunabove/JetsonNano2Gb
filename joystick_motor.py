@@ -33,8 +33,8 @@ cen_angle = int( (max_angle + min_angle)/2 )
 
 servo_angle = cen_angle
 throttle_inc_ratio = 0
-max_throttle = 0.3
-min_throttle = -0.5
+max_throttle = 0.12
+min_throttle = -0.30
 
 def servo_init() :
     print( "Initializing servo angles ..." )
@@ -170,7 +170,7 @@ def motor_control() :
         if abs( throttle_inc_ratio ) < 0.001 :
             sleep( 2*duration )
         else :
-            throttle = motor.throttle + 0.1*throttle_inc_ratio
+            throttle = motor.throttle + max_throttle/2.5*throttle_inc_ratio
             throttle = max( min_throttle, min( max_throttle , throttle ) )
             throttle = max( -1.0, min( 1.0 , throttle ) )
 

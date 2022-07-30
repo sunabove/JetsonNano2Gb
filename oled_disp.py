@@ -57,7 +57,7 @@ def service() :
         h = oled_disp.height
 
         # open lena image
-        img_path = path.join( path.dirname(path.realpath(__file__)), 'lena.png' )
+        img_path = path.join( path.dirname(path.realpath(__file__)), 'test.png' )
         print( f"img_path = {img_path}" )         
         lena = Image.open( img_path )
 
@@ -66,11 +66,7 @@ def service() :
             # convert to grayscale
             im = ImageOps.grayscale(im)
             # rescale to show width height
-            im = im.resize( [w, im.size[1]*w//im.size[0] ], Image.ANTIALIAS)
-            #im = np.asarray(im)
-            #im = im.ravel()
-
-            #print( f"im.shape ={im.shape}" )
+            im = im.resize( [w, int( im.size[1]*w/im.size[0] ) ] )
 
             lena = im
         pass

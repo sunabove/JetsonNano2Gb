@@ -1,4 +1,4 @@
-import cv2, time, threading
+import cv2 as cv, time, threading
 from flask import Response, Flask
 
 global video_frame
@@ -14,7 +14,9 @@ def gstream_pipeline(
 app = Flask(__name__)
 size_factor = 4
 GSTREAMER_PIPELINE = gstream_pipeline(width=1280//size_factor, height=960//size_factor) 
-video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
+video_capture = cv.VideoCapture(GSTREAMER_PIPELINE, cv.CAP_GSTREAMER)
+#video_capture = cv.VideoCapture(0)
+#video_capture.set(cv.CAP_PROP_FPS, 10)
 
 def capture_frames():
     global video_frame, thread_lock
@@ -35,7 +37,7 @@ def encode_frame():
             global video_frame
             if video_frame is None:
                 continue
-            return_key, encoded_image = cv2.imencode(".jpg", video_frame)
+            return_key, encoded_image = cv.imencode(".jpg", video_frame)
             if not return_key:
                 continue
 

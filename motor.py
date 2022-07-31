@@ -11,6 +11,9 @@ motor = kit.continuous_servo[ 1 ]
 min_throttle = -0.7
 max_throttle = 0.3 
 
+motor.throttle = -1.0
+sleep( 1 )
+
 duration = 0.2
 for throttle in np.arange( min_throttle, max_throttle, 0.01 ) :
     print( f"throttle = {throttle:.2f}", flush=True )
@@ -22,8 +25,7 @@ for throttle in np.arange( max_throttle, min_throttle, -0.01 ) :
     motor.throttle = throttle
     sleep( duration ) 
 
-motor.throttle = 0.0
-
-sleep( 2 )
+motor.throttle = -1.0
+sleep( 1 )
 
 print( "Good bye!" )

@@ -9,11 +9,15 @@ import psutil, shutil, numpy as np
 
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 
+import os, board, busio, adafruit_ina219
+
 oled_alive = True 
 
 oled_disp = SSD1306()
-
 oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 16, encoding="unic") 
+
+i2c = busio.I2C(board.SCL, board.SDA)
+ina219 = adafruit_ina219.INA219(i2c)
 
 def stop() :
     global oled_alive
@@ -28,10 +32,11 @@ def stop() :
     text = "SHUTDOWN"
 
     tw = oled_font.getsize(text)[0]
+    th = oled_font.getsize(text)[1]
 
     # text center align
     x = (w - tw)//2
-    y = 4
+    y = (h - th)//2
     
     draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
     draw.text( [x, y], text, font = oled_font, fill = 0) 
@@ -79,7 +84,7 @@ def service() :
         
         def display_oled_info( idx = 0 ) :
             if idx >= 0 : 
-                idx = idx % 7
+                idx = idx % 9
             pass
 
             text = f""
@@ -122,7 +127,11 @@ def service() :
                 pct = psutil.virtual_memory()[2] 
 
                 text = f"RAM: {pct:02.1f}%"
-            elif idx == 6 : # LENA IMAGE
+            elif idx == 6 : # VOLTAGE
+                text = f"Volt: {ina219.bus_voltage:.2f}V"
+            elif idx == 7 : # VOLTAGE
+                text = f"Curr: {abs(ina219.current):.0f}mA"
+            elif idx == 8 : # LENA IMAGE
                 # show image by scrolling up by n pixel
                 for y in range( 0, lena.size[1], 4 ) :
                     if not oled_alive :

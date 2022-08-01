@@ -29,11 +29,12 @@ motor_duration = 0.5
 min_angle = 45 
 max_angle = 115
 cen_angle = int( (max_angle + min_angle)/2 )
-
 servo_angle = cen_angle
-throttle_inc_ratio = 0
-max_throttle = 0.30
-min_throttle = -0.30
+
+throttle_max = 1.0
+throttle_zero = -0.2
+throttle_min = -1.0
+throttle_to = throttle_zero 
 
 def servo_init() :
     print( "Initializing servo angles ..." )
@@ -72,12 +73,9 @@ def motor_init() :
 
     duration = 0.5
 
-    min_throttle = - 0.2
-    max_throttle = - 0.1
-
     throttles_group = []
-    throttles_group.append( np.arange( min_throttle, max_throttle, + 0.01 ) )
-    throttles_group.append( np.arange( max_throttle, min_throttle, - 0.01 ) )
+    throttles_group.append( np.arange( throttle_min, throttle_max, + 0.01 ) )
+    throttles_group.append( np.arange( throttle_max, throttle_min, - 0.01 ) )
 
     print( f"throttle = ", end="" )
     prev_text = None
@@ -112,8 +110,7 @@ def joystick_control() :
 
     print( "Power on the joystick and press any key!" )
     idx = 0 
-    global is_running, servo_angle, throttle_inc_ratio
-
+    global is_running, servo_angle, throttle_to
     duration = 0.1
     while is_running :
         events = inputs.get_gamepad()
@@ -131,8 +128,14 @@ def joystick_control() :
                     servo_angle = angle
                     print( f", servo angle = {servo_angle}" )
                 elif code == 'ABS_Y' :
-                    throttle_inc_ratio = (127-state)/127
-                    print( f", throttle_inc_ratio = {throttle_inc_ratio:.3f}, throttle = {motor.throttle:.3f}" )
+                    throttle_ratio = (127 - state)/127
+                    if throttle_ratio > 0 :
+                        throttle_to = abs(throttle_max - throttle_zero)*throttle_ratio + throttle_zero
+                    else :
+                        throttle_to = abs(throttle_zero - throttle_min)*throttle_ratio + throttle_zero
+                    pass
+
+                    print( f", throttle_ratio = {throttle_ratio:.3f}, throttle_to = {throttle_to:.3f} throttle_curr = {motor.throttle:.3f}" )
                 elif code in ( 'BTN_SELECT' , 'BTN_MODE', 'BTN_START' ) :
                     is_running = False 
                 else :
@@ -164,19 +167,22 @@ def servo_control() :
 pass
 
 def motor_control() :
-    global is_running
-
     duration = 0.1
+    
     while is_running :
-        if abs( throttle_inc_ratio ) < 0.001 :
+        throttle_diff = throttle_to - motor.throttle 
+        if abs( throttle_diff ) <= 0.005 :
             sleep( 2*duration ) 
         else :
-            throttle = motor.throttle + 0.05*np.sign( throttle_inc_ratio )
-            #throttle = max( min_throttle, min( max_throttle , throttle ) )
-            throttle = max( -1.0, min( 1.0 , throttle ) )
-            motor.throttle = throttle
+            throttle = motor.throttle + 0.001*np.sign( throttle_diff )
 
-            print( f"throttle = {throttle:.3f}, throttle_inc_ratio = {throttle_inc_ratio:.3f}" )
+            if throttle_diff < 0.08 :
+                throttle = throttle_to
+            pass
+
+            motor.throttle = motor.throttle
+
+            print( f"throttle: to = {throttle_to:.3f}, diff = {throttle_diff:.3f}, set = {throttle:.3f}, curr = {motor.throttle:.3f}" )
             sleep( duration )
         pass 
     pass
@@ -184,7 +190,7 @@ pass
 
 print('Press Ctrl+C to quit!')
 
-motor.throttle = -1.0
+motor.throttle = throttle_zero
 sleep( 0.1 )
 
 do_init = False 
@@ -208,6 +214,14 @@ for thread in threads :
     thread.start()
 pass
 
-joystick_control()
+try :
+    joystick_control()
+finally:
+    is_running = False
+pass
+
+for thread in threads :
+    thread.join()
+pass
 
 print( "Good bye!" )

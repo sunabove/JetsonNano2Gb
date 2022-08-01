@@ -1,9 +1,6 @@
 import numpy as np, cv2 as cv
 import glob
 
-# termination criteria
-criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((6*7,3), np.float32)
 objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
@@ -31,17 +28,26 @@ while cap.isOpened() :
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
     # Find the chess board corners
-    ret, corners = cv.findChessboardCorners(gray, (7,6),None)
+    #ret, corners = cv.findChessboardCorners(gray, (7,6),None)
+    patternSize = (5, 8)
+    patternSize = (6, 10)
+    patternSize = (3, 4)
+    ret, corners = cv.findChessboardCorners(gray, patternSize, None)
+
+    if corners is not None :
+        print( f"corners len = {len(corners)}", flush=True)
 
     # If found, add object points, image points (after refining them)
     if ret :
         objpoints.append(objp)
 
-        corners2 = cv.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
-        imgpoints.append(corners2)
+        # termination criteria
+        criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001) 
+        corners2 = cv.cornerSubPix(gray,corners, (11,11),(-1,-1), criteria)
+        #imgpoints.append(corners2)
 
         # Draw and display the corners
-        img = cv.drawChessboardCorners(img, (7,6), corners2,ret)
+        img = cv.drawChessboardCorners(img, patternSize, corners2, ret)
         cv.imshow('img', img) 
     else :
         cv.imshow('img', gray) 

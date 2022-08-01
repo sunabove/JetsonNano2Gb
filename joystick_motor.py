@@ -1,4 +1,3 @@
-from operator import is_
 import inputs, signal, sys
 import board, busio, numpy as np
 from time import sleep
@@ -197,24 +196,18 @@ pass
 
 threads = []
 
-joystick_thread = Thread(target=joystick_control)
 servo_thread = Thread(target=servo_control)
 motor_thread = Thread(target=motor_control)
+#joystick_thread = Thread(target=joystick_control)
 
-threads.append( joystick_thread )
 threads.append( servo_thread )
 threads.append( motor_thread )
+#threads.append( joystick_thread )
 
 for thread in threads :
     thread.start()
 pass
 
-
-signal.signal(signal.SIGINT, signal_handler)
-signal.pause()
-
-for thread in threads :
-    thread.join()
-pass
+joystick_control()
 
 print( "Good bye!" )

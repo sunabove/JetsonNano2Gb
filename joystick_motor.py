@@ -115,12 +115,13 @@ def joystick_control() :
     idx = 0 
     global is_running, servo_angle, throttle_inc_ratio
 
+    duration = 0.1
     while is_running :
         events = inputs.get_gamepad()
         for e in events:
             code = e.code
             state = e.state
-            if code != 'SYN_REPORT' : 
+            if code not in ( 'SYN_REPORT' ) :  
                 idx += 1
 
                 print( f"[{idx:04d}] CODE: {e.code}, STATE: {e.state}", end = "" )
@@ -139,6 +140,7 @@ def joystick_control() :
                     print()
                 pass
             pass 
+            sleep( duration )
         pass
     pass
 pass

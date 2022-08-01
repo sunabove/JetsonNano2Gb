@@ -174,13 +174,15 @@ def motor_control() :
         if abs( throttle_diff ) <= 0.005 :
             sleep( 2*duration ) 
         else :
-            throttle = motor.throttle + 0.001*np.sign( throttle_diff )
+            throttle = motor.throttle + 0.05*np.sign( throttle_diff )
 
-            if throttle_diff < 0.08 :
+            if abs( throttle_diff ) < 0.05 :
                 throttle = throttle_to
             pass
 
-            motor.throttle = motor.throttle
+            throttle = max( throttle_min, min( throttle_max, throttle) )
+
+            motor.throttle = throttle
 
             print( f"throttle: to = {throttle_to:.3f}, diff = {throttle_diff:.3f}, set = {throttle:.3f}, curr = {motor.throttle:.3f}" )
             sleep( duration )

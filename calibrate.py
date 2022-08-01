@@ -30,8 +30,9 @@ while cap.isOpened() :
     # Find the chess board corners
     #ret, corners = cv.findChessboardCorners(gray, (7,6),None)
     patternSize = (5, 8)
-    patternSize = (6, 10)
     patternSize = (3, 4)
+    patternSize = (6, 10)
+    
     ret, corners = cv.findChessboardCorners(gray, patternSize, None)
 
     if corners is not None :

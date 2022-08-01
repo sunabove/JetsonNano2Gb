@@ -11,19 +11,18 @@ def gstream_pipeline(
         camera_id=0, width=1920, height=1080, framerate=10, flip_method=0 ):
     return f"nvarguscamerasrc sensor-id={camera_id} ! video/x-raw(memory:NVMM), width=(int){width}, height=(int){height}, format=(string)NV12, framerate=(fraction){framerate}/1 ! nvvidconv flip-method={flip_method} ! video/x-raw, width=(int){width}, height=(int){height}, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink max-buffers=1 drop=True"  
 
-app = Flask(__name__)
 size_factor = 4
 GSTREAMER_PIPELINE = gstream_pipeline(width=1280//size_factor, height=960//size_factor) 
-video_capture = cv.VideoCapture(GSTREAMER_PIPELINE, cv.CAP_GSTREAMER)
-#video_capture = cv.VideoCapture(0)
-#video_capture.set(cv.CAP_PROP_FPS, 10)
+cap = cv.VideoCapture(GSTREAMER_PIPELINE, cv.CAP_GSTREAMER)
+
+app = Flask(__name__)
 
 def capture_frames():
     global video_frame, thread_lock
 
-    while video_capture.isOpened():
-        return_key, frame = video_capture.read()
-        if not return_key:
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret :
             break
 
         with thread_lock:
@@ -59,7 +58,7 @@ if __name__ == '__main__':
     finally:
         print( "Shutting down now ..." )
         print( "Camera is closing now... ", flush=True )
-        video_capture.release()
+        cap.release()
         print( "Good bye!", flush=True )
     pass
 pass

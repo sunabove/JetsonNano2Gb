@@ -2,21 +2,24 @@ import sys
 from os import path
 sys.path.append( path.dirname(path.realpath(__file__)) )
 
-from SSD1306 import SSD1306 
 from time import sleep 
 import traceback, os, socket, datetime
 import psutil, shutil, numpy as np
 
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 
-import os, board, busio, adafruit_ina219
+import os, board, busio
+import adafruit_ssd1306, adafruit_ina219
+
+i2c = busio.I2C(board.SCL, board.SDA)
 
 oled_alive = True 
 
-oled_disp = SSD1306()
+print( "Initializaing SSD1306_I2C ...", flush=True )
+oled_disp = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c)
 oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 16, encoding="unic") 
 
-i2c = busio.I2C(board.SCL, board.SDA)
+print( "Initializaing INA219 ...", flush=True )
 ina219 = adafruit_ina219.INA219(i2c)
 
 def stop() :
@@ -41,22 +44,28 @@ def stop() :
     draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
     draw.text( [x, y], text, font = oled_font, fill = 0) 
     
-    oled_disp.ShowImage( oled_disp.getbuffer(image) )
+    oled_disp.image( image )
 
-    oled_disp.Closebus()
+    oled_disp.invert(1)      # display inverted
+    oled_disp.fill( 1 )
+    oled_disp.poweroff()
 pass # -- stop
 
 pass # -- stop
 
-def service() :
+def start() :
     try:
         global oled_alive
 
         oled_alive = True 
 
         # Initialize library.
-        oled_disp.Init()
-        oled_disp.ClearBlack()
+        
+        oled_disp.poweron()
+        oled_disp.fill( 0 )
+        oled_disp.show()
+
+        oled_disp.invert(1)      # display inverted
 
         w = oled_disp.width
         h = oled_disp.height
@@ -151,7 +160,11 @@ def service() :
 
                     im.paste( crop, box=[0, 0, w, y2 - y ] ) 
                     
-                    oled_alive and oled_disp.ShowImage( oled_disp.getbuffer( im ) )
+                    if oled_alive :
+                        oled_disp.image( im )
+                        oled_disp.show()
+                    pass
+
                     sleep( 0.001 )
                 pass
             pass
@@ -171,14 +184,16 @@ def service() :
                 draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
                 draw.text( [x, y], text, font = oled_font, fill = 0) 
                 
-                oled_disp.ShowImage( oled_disp.getbuffer(image) )
+                oled_disp.image( image )
+                oled_disp.show()
             pass
 
             sleep(2.5)
 
             if idx >= 0 : 
                 print ("Turn off screen to prevent heating oled.")
-                oled_disp.ClearBlack()
+                oled_disp.fill( 1 )
+                oled_disp.show()
             pass
 
             sleep(1)
@@ -195,18 +210,31 @@ def service() :
         stop()
 
     except IOError as e:
-        oled_disp.ClearBlack()
+        oled_disp.fill( 1 )
+        oled_disp.show()
 
         print(e)    
     except KeyboardInterrupt:
-        oled_disp.ClearBlack()
+        oled_disp.fill( 1 )
+        oled_disp.show()
 
         print("ctrl + c:")
     finally:
         stop()
     pass
-pass  # -- service
+pass  # -- start
+
+import signal
+signal.signal( signal.SIGTERM, stop )   
 
 if __name__ == '__main__':
-    service()
+    import sys
+
+    argv = sys.argv
+
+    if len( argv ) > 1 and argv[1] == 'stop' :
+        stop()
+    else :
+        start()
+    pass
 pass

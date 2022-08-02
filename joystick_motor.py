@@ -153,8 +153,6 @@ def joystick_control() :
                         motor_thread = Thread(target=motor_control)
                         motor_thread.start()
                     pass
-                elif code in ( 'BTN_SELECT' , 'BTN_MODE', 'BTN_START' ) :
-                    is_running = False 
                 else :
                     print()
                 pass

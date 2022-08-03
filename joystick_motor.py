@@ -134,7 +134,7 @@ def joystick_control() :
                     print( f", servo angle = {servo_angle}", flush=True )
 
                     if servo_thread is None :
-                        servo_thread = threading.Thread(target=servo_control)
+                        servo_thread = threading.Thread(target=servo_control, daemon=True)
                         servo_thread.start()
                     pass
                 elif code == 'ABS_Y' :
@@ -149,7 +149,7 @@ def joystick_control() :
                     print( f", throttle_ratio = {throttle_ratio:.3f}, throttle_to = {throttle_to:.3f} throttle_curr = {motor.throttle:.3f}", flush=True )
 
                     if motor_thread is None :
-                        motor_thread = threading.Thread(target=motor_control)
+                        motor_thread = threading.Thread(target=motor_control, daemon=True)
                         motor_thread.start()
                     pass
                 else :

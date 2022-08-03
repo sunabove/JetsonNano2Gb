@@ -224,10 +224,9 @@ try :
 finally:
     is_running = False
 
-    motor.throttle = -1
+    motor.throttle = throttle_zero
     sleep( 1 )
 pass
-
 
 if servo_thread is not None :
     servo_thread.join()

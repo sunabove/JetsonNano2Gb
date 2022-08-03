@@ -1,8 +1,9 @@
+import sys
 from os import path
 sys.path.append( path.dirname(path.realpath(__file__)) )
 
 from time import sleep 
-import sys, traceback, os, socket, datetime
+import traceback, os, socket, datetime
 import psutil, shutil, numpy as np
 
 from PIL import Image, ImageOps, ImageDraw, ImageFont
@@ -31,8 +32,9 @@ def stop() :
 
     text = "SHUTDOWN"
 
-    tw = oled_font.getsize(text)[0]
-    th = oled_font.getsize(text)[1]
+    size = oled_font.getbbox(text)
+    tw = size[2]
+    th = size[3]
 
     # text center align
     x = (w - tw)//2
@@ -67,23 +69,25 @@ def start() :
         w = oled_disp.width
         h = oled_disp.height
 
-        # open lena image
-        img_path = path.join( path.dirname(path.realpath(__file__)), 'test.png' )
+        # open logo image
+        img_path = path.join( path.dirname(path.realpath(__file__)), 'oled_logo.png' )
         print( f"img_path = {img_path}" )         
-        lena = Image.open( img_path )
+        logo_image = None
 
-        if 1 : 
-            im = lena
+        if path.exists( img_path ) : 
+            logo_image = Image.open( img_path )
+
+            im = logo_image
             # convert to grayscale
-            im = ImageOps.grayscale(im)
+            logo_image = ImageOps.grayscale( logo_image )
             # rescale to show width height
-            im = im.resize( [w, int( im.size[1]*w/im.size[0] ) ] )
+            logo_image = logo_image.resize( [w, int( im.size[1]*w/im.size[0] ) ] )
 
-            lena = im
+            print( f"logo_image size = {logo_image.size}" )
+        else :
+            print( f"logo image[{img_path}] does not exist." )
         pass
 
-        print( f"lena shape={lena.size}" )
-        
         # Create blank image for drawing.
         image = Image.new('1', [w, h], "WHITE")
         draw = ImageDraw.Draw(image)
@@ -134,35 +138,40 @@ def start() :
 
                 text = f"RAM: {pct:02.1f}%"
             elif idx == 6 : # VOLTAGE
-                text = f"Volt: {ina219.bus_voltage:.2f}V"
+                text = f"Voltage: {ina219.bus_voltage:.2f}V"
             elif idx == 7 : # VOLTAGE
-                text = f"Curr: {abs(ina219.current):.0f}mA"
-            elif idx == 8 : # LENA IMAGE
+                text = f"Current: {abs(ina219.current):.0f}mA"
+            elif idx == 8 and logo_image is not None : # Logo Image
                 # show image by scrolling up by n pixel
-                for y in range( 0, lena.size[1], 4 ) :
-                    if not oled_alive :
-                        break
-                    pass
+                
+                size = logo_image.size
+                ranges = [ np.arange( 0, size[1] + 1, 1 ), np.arange( size[1], -1, -1 ) ] 
+                for rng in ranges : 
+                    for y in rng :
+                        if not oled_alive :
+                            break
+                        pass
 
-                    im = Image.new('1', (w, h), 0 ) # create a new blank image
-                    im_draw = ImageDraw.Draw( im )
-                    im_draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 1)
-                    
-                    y2 = y + h 
-                    if y2 > lena.size[1] :
-                        y2 = lena.size[1]
-                    pass
-                    
-                    crop = lena.crop( [0, y, w, y2 ] )
+                        im = Image.new('1', (w, h), 0 ) # create a new blank image
+                        im_draw = ImageDraw.Draw( im )
+                        im_draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 1)
+                        
+                        y2 = y + h 
+                        if y2 > logo_image.size[1] :
+                            y2 = logo_image.size[1]
+                        pass
+                        
+                        crop = logo_image.crop( [0, y, w, y2 ] )
 
-                    im.paste( crop, box=[0, 0, w, y2 - y ] ) 
-                    
-                    if oled_alive :
-                        oled_disp.image( im )
-                        oled_disp.show()
-                    pass
+                        im.paste( crop, box=[0, 0, w, y2 - y ] ) 
+                        
+                        if oled_alive :
+                            oled_disp.image( im )
+                            oled_disp.show()
+                        pass
 
-                    sleep( 0.001 )
+                        sleep( 0.1 )
+                    pass
                 pass
             pass
 
@@ -170,19 +179,32 @@ def start() :
 
             if text : 
                 # text width
-                text_size = oled_font.getsize(text)
-                tw = text_size[0]
-                th = text_size[1]
+                text_size = oled_font.getbbox(text)
+                print( f"text_size = {text_size}" )
+                tw = text_size[2]
+                th = text_size[3]
 
                 # text center align
                 x = (w - tw)//2
                 y = (h - th)//2
                 
-                draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
-                draw.text( [x, y], text, font = oled_font, fill = 0) 
+                if x > -1 : 
+                    draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
+                    draw.text( [x, y], text, font = oled_font, fill = 0) 
+
+                    oled_disp.image( image )
+                    oled_disp.show()
+                else :
+                    for x in range( 5, - (tw - w + 5*3), -1 ) : 
+                        draw.rectangle( [0, 0, w -1, h -1], fill=1, outline = 0)
+                        draw.text( [x, y], text, font = oled_font, fill = 0) 
+
+                        oled_disp.image( image )
+                        oled_disp.show() 
+                        sleep( 0.1 )
+                    pass
+                pass
                 
-                oled_disp.image( image )
-                oled_disp.show()
             pass
 
             sleep(2.5)

@@ -40,7 +40,7 @@ frame_cnt = 0
 def process_image( image ) :
     global frame_cnt
 
-    text = f"Frame: {frame_cnt:04d}" 
+    text = f"FRM : {frame_cnt:04d}" 
     tx = 10
     ty = 20
     th = 20   # line height
@@ -58,10 +58,10 @@ def process_image( image ) :
 
     # RAM 사용량 출력
     pct = psutil.virtual_memory()[2]
+    text = f"MEM : {pct:02.1f} %"
     ty += th
     fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
     bg_color = (50, 50, 60)
-    text = f"RAM : {pct:02.1f} %"
     putTextLine( image, text, tx, ty, fg_color, bg_color )
 
     frame_cnt += 1

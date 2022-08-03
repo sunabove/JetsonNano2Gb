@@ -224,6 +224,9 @@ try :
     joystick_control()
 finally:
     is_running = False
+
+    motor.throttle = -1
+    sleep( 1 )
 pass
 
 

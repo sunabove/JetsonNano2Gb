@@ -1,7 +1,6 @@
-import inputs, signal, sys
+import inputs, signal, sys, threading
 import board, busio, numpy as np
-from time import sleep
-from threading import Thread
+from time import sleep 
 from adafruit_servokit import ServoKit
 
 is_running = True
@@ -135,7 +134,7 @@ def joystick_control() :
                     print( f", servo angle = {servo_angle}", flush=True )
 
                     if servo_thread is None :
-                        servo_thread = Thread(target=servo_control)
+                        servo_thread = threading.Thread(target=servo_control)
                         servo_thread.start()
                     pass
                 elif code == 'ABS_Y' :
@@ -150,7 +149,7 @@ def joystick_control() :
                     print( f", throttle_ratio = {throttle_ratio:.3f}, throttle_to = {throttle_to:.3f} throttle_curr = {motor.throttle:.3f}", flush=True )
 
                     if motor_thread is None :
-                        motor_thread = Thread(target=motor_control)
+                        motor_thread = threading.Thread(target=motor_control)
                         motor_thread.start()
                     pass
                 else :

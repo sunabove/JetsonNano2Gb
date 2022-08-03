@@ -1,7 +1,7 @@
 import inputs, signal, sys
 import board, busio, numpy as np
 from time import sleep
-from threading import Thread 
+from threading import Thread
 from adafruit_servokit import ServoKit
 
 is_running = True

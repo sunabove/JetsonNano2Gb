@@ -3,7 +3,7 @@ from os import path
 sys.path.append( path.dirname(path.realpath(__file__)) )
 
 from time import sleep 
-import traceback, os, socket, datetime
+import traceback, os, socket, datetime, threading 
 import psutil, shutil, numpy as np
 
 from PIL import Image, ImageOps, ImageDraw, ImageFont
@@ -19,6 +19,7 @@ ina219 = adafruit_ina219.INA219(i2c)
 
 oled_alive = True 
 oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 16, encoding="unic") 
+img_path = path.join( path.dirname(path.realpath(__file__)), 'oled_logo.png' )
 
 def stop() :
     global oled_alive
@@ -70,7 +71,6 @@ def start() :
         h = oled_disp.height
 
         # open logo image
-        img_path = path.join( path.dirname(path.realpath(__file__)), 'oled_logo.png' )
         print( f"img_path = {img_path}" )         
         logo_image = None
 
@@ -254,6 +254,8 @@ if __name__ == '__main__':
     if len( argv ) > 1 and argv[1] == 'stop' :
         stop()
     else :
-        start()
+        thread = threading.Thread(target=start, daemon=True)
+        thread.start()
+        thread.join()
     pass
 pass

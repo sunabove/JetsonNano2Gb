@@ -1,26 +1,23 @@
-import sys
 from os import path
 sys.path.append( path.dirname(path.realpath(__file__)) )
 
 from time import sleep 
-import traceback, os, socket, datetime
+import sys, traceback, os, socket, datetime
 import psutil, shutil, numpy as np
 
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 
-import os, board, busio
+import board, busio
 import adafruit_ssd1306, adafruit_ina219
 
-i2c = busio.I2C(board.SCL, board.SDA)
-
-oled_alive = True 
-
 print( "Initializaing SSD1306_I2C ...", flush=True )
+i2c = busio.I2C(board.SCL, board.SDA)
 oled_disp = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c)
-oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 16, encoding="unic") 
-
 print( "Initializaing INA219 ...", flush=True )
 ina219 = adafruit_ina219.INA219(i2c)
+
+oled_alive = True 
+oled_font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 16, encoding="unic") 
 
 def stop() :
     global oled_alive

@@ -74,10 +74,11 @@ def motor_init() :
     sleep( 0.1 )
 
     duration = 0.5
+    throttle_init_max = -0.15
 
     throttles_group = []
-    throttles_group.append( np.arange( throttle_min, throttle_max, + 0.01 ) )
-    throttles_group.append( np.arange( throttle_max, throttle_min, - 0.01 ) )
+    throttles_group.append( np.arange( throttle_zero, throttle_init_max, 0.01 ) )
+    throttles_group.append( np.arange( throttle_init_max, throttle_zero, - 0.01 ) ) 
 
     print( f"throttle = ", end="" )
     prev_text = None
@@ -93,7 +94,7 @@ def motor_init() :
             motor.throttle = throttle
             sleep( duration )
         pass
-        sleep( 1 )
+        sleep( 3 )
     pass
 
     motor.throttle = -1.0
@@ -212,7 +213,7 @@ print('Press Ctrl+C to quit!')
 motor.throttle = throttle_zero
 sleep( 0.1 )
 
-do_init = False 
+do_init = True 
 if do_init:
     servo_init()
     sleep( 1 )
@@ -224,7 +225,7 @@ try :
 finally:
     is_running = False
 
-    motor.throttle = throttle_zero
+    motor.throttle = -1.0
     sleep( 1 )
 pass
 

@@ -2,18 +2,17 @@ LINE = 60*"#"
 print( "Hello ...")
 
 import numpy as np, cv2 as cv, glob
+from time import sleep
 
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 # Find the chess board corners
 patternSize = (7, 6)
 patternSize = (6, 10)
 patternSize = (5, 8)
-patternSize = (3, 4)
+patternSize = (4, 4)
 
 objp = np.zeros((6*7,3), np.float32)
 objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
-
-criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001) 
 
 print( f"Pattern size = {patternSize}")
 # Arrays to store object points and image points from all the images.
@@ -36,7 +35,9 @@ print(); print()
 cap = cv.VideoCapture(gstream_info, cv.CAP_GSTREAMER)
 
 idx = 0 
-while cap.isOpened() :
+corners_Found = False
+
+while cap.isOpened() and not corners_Found :
     ret, img = cap.read()
     if not ret:
         break
@@ -48,14 +49,16 @@ while cap.isOpened() :
 
     if corners is not None :
         print( f"[{idx:04d}] Corners len = {len(corners)}", flush=True)
+        corners_Found = True
     else :
         print( f"[{idx:04d}] Corners not found!" )
     pass
 
     # If found, add object points, image points (after refining them)
     if ret :
-        
         # termination criteria
+        criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001) 
+
         corners2 = cv.cornerSubPix(gray,corners, (11,11),(-1,-1), criteria)
         # Draw and display the corners
         img = cv.drawChessboardCorners(img, patternSize, corners2, ret)
@@ -74,6 +77,10 @@ while cap.isOpened() :
         break
     pass
     idx += 1
+pass
+
+while not ( cv.waitKey(1) in [ ord('q'), 27 ] ):
+    sleep( 1 )
 pass
 
 cv.destroyAllWindows()

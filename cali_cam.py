@@ -10,9 +10,14 @@ patternSize = (7, 6)
 patternSize = (6, 10)
 patternSize = (5, 8)
 patternSize = (4, 4)
+patternSize = (3, 4)
 
-objp = np.zeros((6*7,3), np.float32)
-objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
+pattern_col = patternSize[0]
+pattern_row = patternSize[1]
+patternSize = (pattern_col, pattern_row)
+
+objp = np.zeros((pattern_col*pattern_row,3), np.float32)
+objp[:,:2] = np.mgrid[0:pattern_col, 0:pattern_row].T.reshape(-1,2)
 
 print( f"Pattern size = {patternSize}")
 # Arrays to store object points and image points from all the images.
@@ -36,6 +41,8 @@ cap = cv.VideoCapture(gstream_info, cv.CAP_GSTREAMER)
 
 idx = 0 
 corners_Found = False
+img = None
+gray = None 
 
 while cap.isOpened() and not corners_Found :
     ret, img = cap.read()
@@ -64,7 +71,7 @@ while cap.isOpened() and not corners_Found :
         img = cv.drawChessboardCorners(img, patternSize, corners2, ret)
         cv.imshow('img', img) 
         
-        do_append = False 
+        do_append = True  
         if do_append : 
             objpoints.append(objp)
             imgpoints.append(corners2)
@@ -77,6 +84,28 @@ while cap.isOpened() and not corners_Found :
         break
     pass
     idx += 1
+pass
+
+while not ( cv.waitKey(1) in [ ord('q'), 27 ] ):
+    sleep( 1 )
+pass
+
+if gray is not None :
+    ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+
+    h, w = gray.shape[:2]
+    newcameramtx, roi=cv.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
+
+    # undistort
+    # undistort
+    dst = cv.undistort(img, mtx, dist, None, newcameramtx)
+
+    # crop the image
+    x,y,w,h = roi
+    dst = dst[y:y+h, x:x+w]
+    cv.imwrite('calibresult.png', dst)
+
+    cv.imshow('img', dst)
 pass
 
 while not ( cv.waitKey(1) in [ ord('q'), 27 ] ):

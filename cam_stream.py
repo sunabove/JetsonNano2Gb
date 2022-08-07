@@ -68,7 +68,8 @@ def process_image( image ) :
     return image
 pass
 
-app = Flask(__name__)
+# WEB Flask
+app = Flask( __name__ )
 
 def capture_frames():
     global video_frame, thread_lock
@@ -78,7 +79,7 @@ def capture_frames():
         if not ret :
             break
 
-        with thread_lock:            
+        with thread_lock:
             video_frame = frame.copy()
             vidoe_frame = process_image( video_frame )
         pass
@@ -86,13 +87,13 @@ def capture_frames():
 pass
 
 def encode_frame():
-    global thread_lock
+    global thread_lock, video_frame
     while True:
         # Acquire thread_lock to access the global video_frame object
         with thread_lock:
-            global video_frame
             if video_frame is None:
                 continue
+            pass
 
             ret, encoded_image = cv.imencode(".jpg", video_frame)
             
@@ -111,6 +112,7 @@ pass
 @app.route("/")
 def stream_frames():
     return Response(encode_frame(), mimetype = "multipart/x-mixed-replace; boundary=frame")
+pass
 
 if __name__ == '__main__':
     capture_thread = threading.Thread(target=capture_frames)

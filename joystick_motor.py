@@ -211,13 +211,14 @@ pass
 print('Press Ctrl+C to quit!')
 
 motor.throttle = throttle_zero
-sleep( 0.1 )
+sleep( 0.2 )
 
-do_init = True 
+do_init = False 
 if do_init:
     servo_init()
     sleep( 1 )
     motor_init()
+    print()
 pass
 
 try :
@@ -225,7 +226,7 @@ try :
 finally:
     is_running = False
 
-    motor.throttle = -1.0
+    motor.throttle = throttle_zero
     sleep( 1 )
 pass
 

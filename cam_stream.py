@@ -38,7 +38,7 @@ frame_cnt = 0
 def process_image( image ) :
     global frame_cnt, frame_no
 
-    text = f"FRM CNT: {frame_cnt:04d}, FRM NO: {frame_no}" 
+    text = f"FRM NO: {frame_cnt}/{frame_no}, Ratio = { (frame_cnt/frame_no)*100:3.1f} %" 
     tx = 10
     ty = 20
     th = 20   # line height
@@ -46,14 +46,13 @@ def process_image( image ) :
     bg_color = (50, 50, 60)
     putTextLine( image, text, tx, ty, fg_color, bg_color )
 
-    # CPU 사용량 출력
-    pct = psutil.cpu_percent()
-    text = f"CPU : {pct:02.1f} %"
-
-    # RAM 사용량 출력
-    pct = psutil.virtual_memory()[2]
-    text += f" MEM : {pct:02.1f} %"
+    text = ""
+    pct = psutil.virtual_memory()[2]  # RAM 사용량 출력 
+    text += f"MEM : {pct:02.1f} %"
     
+    pct = psutil.cpu_percent() # CPU 사용량 출력 
+    text += f" CPU : {pct:03.1f} %"
+
     ty += th
     fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
     bg_color = (50, 50, 60)

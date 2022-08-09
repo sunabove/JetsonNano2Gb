@@ -22,13 +22,13 @@ for throttle in np.arange( 0, max_throttle, 0.01 ) :
     motor.throttle = throttle
     sleep( duration )
 
-print( "Decresing speed ...")
+print( "\nDecresing speed ...")
 for throttle in np.arange( max_throttle, 0, -0.01 ) :
     print( f"throttle = {throttle:.2f}", flush=True )
     motor.throttle = throttle
     sleep( duration ) 
 
-print( "Backward ....")
+print( "\nBackward ....")
 motor.throttle = -1.0
 sleep( 1 )
 for throttle in np.arange( 0, min_throttle, -0.01 ) :
@@ -39,4 +39,4 @@ for throttle in np.arange( 0, min_throttle, -0.01 ) :
 motor.throttle = 0.0
 sleep( 1 )
 
-print( "Good bye!" )
+print( "\nGood bye!" )

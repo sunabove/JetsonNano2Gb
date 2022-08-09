@@ -12,26 +12,34 @@ print("Done initializing servokit.")
 
 motor = kit.continuous_servo[ 1 ]
 
-def set_throttle( throttle_to) : 
-    diff = throttle_to - motor.throttle 
-    while abs( diff ) > 0.01 :
-        inc = 0.01*np.sign( diff )
-        print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
-        motor.throttle += inc
-        sleep( 0.1 )
-        diff = throttle_to - motor.throttle 
-    pass
+motor.throttle = 0.0
+sleep( 0.1 )
 
-    motor.throttle = throttle_to
-    diff = throttle_to - motor.throttle 
-    print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
+def set_throttle( throttle_to) : 
+    while True :
+        diff = throttle_to - motor.throttle
+        inc = diff if abs( diff ) < 0.1 else diff/3.0
+        print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
+        
+        if -1.0 <= motor.throttle <= 1.0 :
+            motor.throttle += inc
+        else :
+            motor.throttle = throttle_to
+        pass
+
+        sleep( 0.1 )
+
+        if abs( diff ) < 0.1 :
+            break
+        pass
+    pass
 pass
 
 print( "Sending maximum throttle signal ...." )
 set_throttle( 1.0 )
 sleep( 1 )
 
-print( "Connect the Motor cable to the power! " )
+print( "\nConnect the Motor cable to the power! " )
 input( "Enter to continue ..." )
 print( "Wait for 5 seconds! " )
 sleep( 5 )

@@ -3,7 +3,8 @@ import board, busio, numpy as np
 from time import sleep
 
 print("Initializing ServoKit ...")
-kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
+i2c = busio.I2C(board.SCL, board.SDA)
+kit = ServoKit(channels=16, i2c=i2c)
 print("Done initializing servokit.")
 
 motor = kit.continuous_servo[ 1 ]

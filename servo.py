@@ -5,7 +5,8 @@ from time import sleep
 print( "Hello ..." )
 
 print("Initializing ServoKit ...")
-kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
+i2c = busio.I2C(board.SCL, board.SDA)
+kit = ServoKit(channels=16, i2c=i2c)
 print("Done initializing servokit.")
 
 servo = kit.servo[0]

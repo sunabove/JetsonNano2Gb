@@ -12,7 +12,7 @@ print("Done initializing servokit.")
 
 motor = kit.continuous_servo[ 1 ]
 
-print( "" )
+print( "Sending maximum throttle signal ...." )
 motor.throttle = 1.0
 sleep( 1 )
 
@@ -21,7 +21,8 @@ input( "Enter to continue ..." )
 print( "Wait for 5 seconds! " )
 sleep( 5 )
 
-motor.throttle = 0
-sleep( 1 )
+print( "Sending minimum throttle signal ...." )
+motor.throttle = 0.0
+sleep( 5 )
 
 print( "Good bye!" )

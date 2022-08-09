@@ -9,24 +9,34 @@ print("Done initializing servokit.")
 
 motor = kit.continuous_servo[ 1 ]
 
-min_throttle = -0.7
-max_throttle = 0.3 
+max_throttle =  0.4 
+min_throttle = -0.4
 
-motor.throttle = -1.0
+motor.throttle = 0.0
 sleep( 1 )
 
 duration = 0.2
-for throttle in np.arange( min_throttle, max_throttle, 0.01 ) :
+print( "Forward ....")
+for throttle in np.arange( 0, max_throttle, 0.01 ) :
     print( f"throttle = {throttle:.2f}", flush=True )
     motor.throttle = throttle
     sleep( duration )
 
-for throttle in np.arange( max_throttle, min_throttle, -0.01 ) :
+print( "Decresing speed ...")
+for throttle in np.arange( max_throttle, 0, -0.01 ) :
     print( f"throttle = {throttle:.2f}", flush=True )
     motor.throttle = throttle
     sleep( duration ) 
 
+print( "Backward ....")
 motor.throttle = -1.0
+sleep( 1 )
+for throttle in np.arange( 0, min_throttle, -0.01 ) :
+    print( f"throttle = {throttle:.2f}", flush=True )
+    motor.throttle = throttle
+    sleep( duration ) 
+
+motor.throttle = 0.0
 sleep( 1 )
 
 print( "Good bye!" )

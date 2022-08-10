@@ -37,6 +37,6 @@ for throttle in np.arange( 0, min_throttle, -0.01 ) :
     sleep( duration ) 
 
 motor.throttle = 0.0
-sleep( 1 )
+sleep( 2 )
 
 print( "\nGood bye!" )

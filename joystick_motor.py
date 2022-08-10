@@ -5,18 +5,9 @@ from adafruit_servokit import ServoKit
 
 is_running = True
 
-def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!')
-    print( "Move joystick to quit!")
-    global is_running
-    is_running = False
-    sleep( 1 )
-    motor.throttle = -1.0
-    sys.exit( 0 )
-pass
-
 print("Initializing ServoKit .... ")
-kit = ServoKit(channels=16, i2c=busio.I2C(board.SCL, board.SDA))
+i2c = busio.I2C(board.SCL, board.SDA)
+kit = ServoKit(channels=16, i2c=i2c)
 print("Done initializing servokit.")
 
 servo = kit.servo[0]
@@ -30,10 +21,10 @@ max_angle = 115
 cen_angle = int( (max_angle + min_angle)/2 )
 servo_angle = cen_angle
 
-throttle_max = 1.0
-throttle_zero = -0.2
-throttle_min = -1.0
-throttle_to = throttle_zero 
+throttle_max  = 1.0
+throttle_zero = -0.15
+throttle_min  = -1.0
+throttle_to   = throttle_zero 
 
 servo_thread = None
 motor_thread = None 
@@ -147,6 +138,9 @@ def joystick_control() :
                         throttle_to = abs(throttle_zero - throttle_min)*throttle_ratio + throttle_zero
                     pass
 
+                    throttle_to = max( throttle_min, min( throttle_max, throttle_to) )
+                    throttle_to = max( -1.0, min( 1.0, throttle_to) )
+
                     print( f", throttle_ratio = {throttle_ratio:.3f}, throttle_to = {throttle_to:.3f} throttle_curr = {motor.throttle:.3f}", flush=True )
 
                     if motor_thread is None :
@@ -182,28 +176,51 @@ def servo_control() :
     pass
 pass
 
+def set_throttle( throttle_to ) : 
+    while True :
+        diff = throttle_to - motor.throttle
+        inc = diff if abs( diff ) < 0.1 else diff/3.0
+        print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
+        
+        if -1.0 <= motor.throttle <= 1.0 :
+            motor.throttle += inc
+        else :
+            motor.throttle = throttle_to
+        pass
+
+        sleep( 0.1 )
+
+        if abs( diff ) < 0.1 :
+            break
+        pass
+    pass
+pass
+
 def motor_control() :
     duration = 0.1
-    global is_running, motor_thread
+    global is_running, motor_thread, throttle_to
     
     while is_running  :
-        throttle_diff = throttle_to - motor.throttle 
-        if abs( throttle_diff ) <= 0.005 :
+        if throttle_to < 0 and motor.throttle > 0 :
+            motor.throttle = -1.0
+            sleep( duration )
+        pass
+
+        diff = throttle_to - motor.throttle
+        inc = diff if abs( diff ) < 0.1 else diff/3.0
+        print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
+        
+        if -1.0 <= motor.throttle <= 1.0 :
+            motor.throttle += inc
+        else :
+            motor.throttle = throttle_to
+        pass
+
+        sleep( 0.1 )
+
+        if abs( diff ) < 0.1 :
             motor_thread = None
             break
-        else :
-            throttle = motor.throttle + 0.05*np.sign( throttle_diff )
-
-            if abs( throttle_diff ) < 0.05 :
-                throttle = throttle_to
-            pass
-
-            throttle = max( throttle_min, min( throttle_max, throttle) )
-
-            motor.throttle = throttle
-
-            print( f"throttle: to = {throttle_to:.3f}, diff = {throttle_diff:.3f}, set = {throttle:.3f}, curr = {motor.throttle:.3f}" )
-            sleep( duration )
         pass 
     pass
 pass

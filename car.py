@@ -1,17 +1,15 @@
 import cv2 as cv, time, threading, psutil
+from time import sleep
 from flask import Response, Flask
 
-global video_frame
 video_frame = None
-
-global thread_lock 
-thread_lock = threading.Lock() 
+frame_no = 0 
 
 def gstream_pipeline(
         camera_id=0, width=1920, height=1080, framerate=10, flip_method=0 ):
     return f"nvarguscamerasrc sensor-id={camera_id} ! video/x-raw(memory:NVMM), width=(int){width}, height=(int){height}, format=(string)NV12, framerate=(fraction){framerate}/1 ! nvvidconv flip-method={flip_method} ! video/x-raw, width=(int){width}, height=(int){height}, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink max-buffers=1 drop=True"  
 
-size_factor = 4
+size_factor = 2
 GSTREAMER_PIPELINE = gstream_pipeline(width=1280//size_factor, height=960//size_factor) 
 cap = cv.VideoCapture(GSTREAMER_PIPELINE, cv.CAP_GSTREAMER)
 
@@ -38,9 +36,9 @@ pass # -- putTextLine
 
 frame_cnt = 0 
 def process_image( image ) :
-    global frame_cnt
+    global frame_cnt, frame_no
 
-    text = f"FRM : {frame_cnt:04d}" 
+    text = f"FRM NO: {frame_cnt}/{frame_no}, Ratio = { (frame_cnt/frame_no)*100:3.1f} %" 
     tx = 10
     ty = 20
     th = 20   # line height
@@ -48,17 +46,13 @@ def process_image( image ) :
     bg_color = (50, 50, 60)
     putTextLine( image, text, tx, ty, fg_color, bg_color )
 
-    # CPU 사용량 출력
-    pct = psutil.cpu_percent()
-    text = f"CPU : {pct:02.1f} %"
-    ty += th
-    fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
-    bg_color = (50, 50, 60)
-    putTextLine( image, text, tx, ty, fg_color, bg_color )
+    text = ""
+    pct = psutil.virtual_memory()[2]  # RAM 사용량 출력 
+    text += f"MEM : {pct:02.1f} %"
+    
+    pct = psutil.cpu_percent() # CPU 사용량 출력 
+    text += f" CPU : {pct:03.1f} %"
 
-    # RAM 사용량 출력
-    pct = psutil.virtual_memory()[2]
-    text = f"MEM : {pct:02.1f} %"
     ty += th
     fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
     bg_color = (50, 50, 60)
@@ -72,39 +66,39 @@ pass
 app = Flask( __name__ )
 
 def capture_frames():
-    global video_frame, thread_lock
+    global video_frame, thread_lock, frame_no
 
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret :
             break
 
-        with thread_lock:
-            video_frame = frame.copy()
-            vidoe_frame = process_image( video_frame )
-        pass
+        video_frame = frame
+        frame_no += 1
     pass
 pass
 
 def encode_frame():
-    global thread_lock, video_frame
+    global thread_lock, video_frame, frame_no
+    curr_frame_no = frame_no -1
+
     while True:
         # Acquire thread_lock to access the global video_frame object
-        with thread_lock:
-            if video_frame is None:
-                continue
-            pass
+        if ( video_frame is not None ) and ( curr_frame_no < frame_no ):
+            curr_frame_no = frame_no
 
-            ret, encoded_image = cv.imencode(".jpg", video_frame)
-            
+            frame = process_image( video_frame )
+            ret, encoded_image = cv.imencode(".jpg", frame)
+        
             if not ret:
                 continue
-            pass
-        pass
+            pass 
 
-        # Output image as a byte array
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-            bytearray(encoded_image) + b'\r\n')
+            # Output image as a byte array
+            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+                bytearray(encoded_image) + b'\r\n')
+        else : 
+            sleep( 0.1 )
         pass
     pass
 pass

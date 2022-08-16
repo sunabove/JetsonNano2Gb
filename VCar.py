@@ -196,7 +196,7 @@ print( "Done. Motor initializaing.")
 
 ##### SERVO INITIALIZE
 print( "Servo initializing ...")
-
+set_steering( angle_cen )
 print( "Done. Servo initializaing." )
 
 def stop():

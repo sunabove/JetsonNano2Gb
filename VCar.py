@@ -267,15 +267,15 @@ def start() :
             result = os.popen("sync && sync && sudo shutdown now").read().strip()
             print( f"Result = {result}")
         elif cmd == "stop" :
-            pass
+            set_throttle( throttle_zero )
         elif cmd == "forward":
-            pass
+            set_throttle( motor.throttle + (throttle_max - throttle_min)/20.0 )
         elif cmd == "backward":
-            pass
+            set_throttle( motor.throttle - (throttle_max - throttle_min)/20.0 )
         elif cmd == "turn_left":
-            pass
+            set_steering( servo.angle + (angle_max - angle_min)/10.0 )
         elif cmd == "turn_right":
-            pass
+            set_steering( servo.angle - (angle_max - angle_min)/10.0 )
         pass
 
         return "OK"

@@ -282,18 +282,21 @@ def start() :
             set_throttle( throttle_zero )
             set_steering( angle_cen )
         elif cmd == "forward":
-            if motor.throttle < throttle_zero :
-                set_throttle( throttle_zero )
-            else :
-                set_throttle( motor.throttle + abs(throttle_max - throttle_zero)/10.0 )
+            throttle_to = motor.throttle + abs(throttle_max - throttle_zero)/10.0
+            
+            if throttle_to < throttle_zero :
+                throttle_to = throttle_zero
             pass
+        
+            set_throttle( throttle_to ) 
         elif cmd == "backward":
-            if motor.throttle > throttle_zero :
-                set_throttle( throttle_zero )
-            else :
-                set_throttle( motor.throttle - abs(throttle_zero - throttle_min)/10.0 )
-            pass
+            throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/10.0 )
 
+            if throttle_to > throttle_zero :
+                throttle_to =  throttle_zero
+            pass
+            
+            set_throttle( throttle_to )
         elif cmd == "turn_left":
             set_steering( servo.angle + (angle_max - angle_min)/10.0 )
         elif cmd == "turn_right":

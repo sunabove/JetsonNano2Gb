@@ -285,7 +285,7 @@ def start() :
             if motor.throttle < throttle_zero :
                 set_throttle( throttle_zero )
             else : 
-                throttle_to = motor.throttle + abs(throttle_max - throttle_zero)/10.0
+                throttle_to = motor.throttle + abs(throttle_max - throttle_zero)/3.0
                 set_throttle( throttle_to ) 
             pass
 
@@ -293,7 +293,7 @@ def start() :
             if motor.throttle > throttle_zero : 
                 set_throttle( throttle_zero )
             else :
-                throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/10.0
+                throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/3.0
                 set_throttle( throttle_to )
             pass
         elif cmd == "turn_left":

@@ -143,7 +143,13 @@ def set_throttle( throttle_to ) :
     throttle_to = min( 1.0, max( -1.0, throttle_to ) )
 
     while True :
+        if throttle_to < 0 and motor.throttle >= 0 :
+            motor.throttle = -1.0
+            sleep( duration )
+        pass
+
         diff = throttle_to - motor.throttle
+
         inc = diff if abs( diff ) < 0.1 else diff/3.0
         print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
         
@@ -171,7 +177,7 @@ def set_steering( angle_to ) :
         
     while True :
         diff = angle_to - servo.angle
-        inc = diff if abs( diff ) < 2.0 else diff/2.0
+        inc = diff if abs( diff ) < 2.0 else ( 2.0*np.sign( diff ) )
 
         print( f"curr angle = {servo.angle:.4f}, to angle = {angle_to}, inc = {inc:.4f}" )
 

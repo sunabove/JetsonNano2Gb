@@ -173,6 +173,8 @@ def set_steering( angle_to ) :
         diff = angle_to - servo.angle
         inc = diff if abs( diff ) < 2.0 else diff/2.0
 
+        print( f"curr angle = {servo.angle:.4f}, to angle = {angle_to}, inc = {inc:.4f}" )
+
         if angle_min <= ( servo.angle + inc ) <= angle_max :
             servo.angle += inc
         else :

@@ -13,6 +13,7 @@ log.basicConfig(
 
 app = None
 
+########## Camera #####################
 def gstream_pipeline(
         camera_id=0, width=1920, height=1080, framerate=10, flip_method=0 ):
     return f"nvarguscamerasrc sensor-id={camera_id} ! video/x-raw(memory:NVMM), width=(int){width}, height=(int){height}, format=(string)NV12, framerate=(fraction){framerate}/1 ! nvvidconv flip-method={flip_method} ! video/x-raw, width=(int){width}, height=(int){height}, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink max-buffers=1 drop=True"  
@@ -111,6 +112,83 @@ def encode_frame():
         pass
     pass
 pass
+
+########### SERVO/MOTOR ####################
+print("Initializing ServoKit .... ")
+import board, busio
+from adafruit_servokit import ServoKit
+
+i2c = busio.I2C(board.SCL, board.SDA)
+kit = ServoKit(channels=16, i2c=i2c)
+print("Done initializing servokit.")
+
+servo = kit.servo[0]
+motor = kit.continuous_servo[ 1 ]
+
+servo_duration = 0.015
+motor_duration = 0.1
+
+min_angle = 45 
+max_angle = 115
+cen_angle = int( (max_angle + min_angle)/2 )
+servo_angle = cen_angle
+
+throttle_max  = 1.0
+throttle_zero = -0.15
+throttle_min  = -1.0
+throttle_to   = throttle_zero 
+
+def set_throttle( throttle_to ) : 
+    global motor
+
+    duration = motor_duration
+    while True :
+        diff = throttle_to - motor.throttle
+        inc = diff if abs( diff ) < 0.1 else diff/3.0
+        print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
+        
+        if -1.0 <= ( motor.throttle + inc ) <= 1.0 :
+            motor.throttle += inc
+        else :
+            motor.throttle = throttle_to
+        pass
+
+        sleep( duration )
+
+        if abs( diff ) < 0.1 :
+            break
+        pass
+    pass
+pass
+
+def set_steering( angle_to ) :
+    global servo
+    
+    duration = servo_duration
+        
+    while abs( cen_angle - servo.angle ) > 1.0 :
+        diff = cen_angle - servo.angle
+        if abs( diff ) <= 1.0 :
+            servo.angle = cen_angle
+            sleep( duration )
+            break
+        else :
+            inc = diff/3.0
+            servo.angle += diff
+            sleep( duration )
+        pass
+    pass
+pass
+
+##### MOTOR INITIALIZE
+print( "Motor initializing ...") 
+set_throttle( throttle_zero )
+print( "Done. Motor initializaing.")
+
+##### SERVO INITIALIZE
+print( "Servo initializing ...")
+
+print( "Done. Servo initializaing." )
 
 def stop():
     global app, camera, is_running

@@ -183,7 +183,7 @@ def set_throttle( throttle_to ) :
         inc = diff if abs( diff ) < 0.1 else diff/3.0
         print( f"curr throttle = {motor.throttle:.4f}, to throttle = {throttle_to}, inc = {inc:.4f}" )
         
-        if -1.0 <= motor.throttle <= 1.0 :
+        if -1.0 <= ( motor.throttle + inc ) <= 1.0 :
             motor.throttle += inc
         else :
             motor.throttle = throttle_to

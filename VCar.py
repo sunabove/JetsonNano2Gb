@@ -1,6 +1,6 @@
 #coding: utf-8
 
-import sys, numpy as np, threading, logging as log, inspect, signal
+import os, sys, numpy as np, threading, logging as log, inspect, signal
 import cv2 as cv, psutil
 
 from time import time, sleep
@@ -178,7 +178,10 @@ def start() :
 
         log.info(f"cmd={cmd}, val={val}")
 
-        if cmd == "stop" :
+        if cmd == "shutdown":
+            result = os.popen("sync && sync && sudo shutdown now").read().strip()
+            print( f"Result = {result}")
+        elif cmd == "stop" :
             pass
         elif cmd == "forward":
             pass

@@ -258,7 +258,7 @@ def start() :
     def index(): 
         config = {}
         
-        return render_template('index_robot_server.html', **config )
+        return render_template('index_vcar.html', **config )
     pass 
 
     @app.route('/video')
@@ -287,10 +287,10 @@ def start() :
             if throttle_to < throttle_zero :
                 throttle_to = throttle_zero
             pass
-        
+
             set_throttle( throttle_to ) 
         elif cmd == "backward":
-            throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/10.0 )
+            throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/10.0
 
             if throttle_to > throttle_zero :
                 throttle_to =  throttle_zero

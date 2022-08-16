@@ -21,6 +21,7 @@ size_factor = 2
 GSTREAMER_PIPELINE = gstream_pipeline(width=1280//size_factor, height=960//size_factor) 
 camera = cv.VideoCapture(GSTREAMER_PIPELINE, cv.CAP_GSTREAMER)
 
+is_running = True
 video_frame = None
 frame_no = 0 
 capture_thread = None
@@ -75,9 +76,9 @@ def process_image( image ) :
 pass
 
 def capture_frames():
-    global video_frame, frame_no
+    global is_running, video_frame, frame_no
 
-    while camera.isOpened():
+    while is_running and camera.isOpened():
         ret, frame = camera.read()
         if not ret :
             break
@@ -88,11 +89,10 @@ def capture_frames():
 pass
 
 def encode_frame():
-    global video_frame, frame_no
+    global is_running, video_frame, frame_no
     curr_frame_no = frame_no -1
 
-    while True:
-        # Acquire thread_lock to access the global video_frame object
+    while is_running :
         if ( video_frame is not None ) and ( curr_frame_no < frame_no ):
             curr_frame_no = frame_no
 
@@ -113,11 +113,17 @@ def encode_frame():
 pass
 
 def stop():
-    global robot, app
+    global app, camera, is_running
     
     print( "", flush=True) 
 
-    log.info( 'Robot stopping ...' ) 
+    log.info( 'VCar stopping ...' ) 
+
+    is_running = False
+
+    if camera is not None :
+        camera.release()
+    pass
 
     if app is not None : 
         app.do_teardown_appcontext()
@@ -127,7 +133,9 @@ def stop():
 pass # -- stop
 
 def start() : 
-    global app, capture_thread
+    global app, capture_thread, is_running
+
+    is_running = True
 
     log.info( "Hello....." )
 
@@ -198,7 +206,7 @@ if __name__=='__main__':
     else :
         def signal_handler(signal, frame):
             print()
-            print( 'You have pressed Ctrl-C.' ) 
+            print( '\nYou have pressed Ctrl-C.' ) 
 
             stop() 
 

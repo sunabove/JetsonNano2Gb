@@ -162,6 +162,7 @@ def servo_control() :
     duration = servo_duration
     while is_running :
         diff = servo_angle - servo.angle 
+        
         if abs( diff ) <= 1 :
             servo_thread = None
             break

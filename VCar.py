@@ -1,5 +1,3 @@
-#coding: utf-8
-
 import os, sys, numpy as np, threading, logging as log, inspect, signal
 import cv2 as cv, psutil
 
@@ -128,10 +126,9 @@ motor = kit.continuous_servo[ 1 ]
 servo_duration = 0.015
 motor_duration = 0.1
 
-min_angle = 45 
-max_angle = 115
-cen_angle = int( (max_angle + min_angle)/2 )
-servo_angle = cen_angle
+angle_min = 45 
+angle_max = 115
+angle_cen = int( (angle_min + angle_max)/2 )
 
 throttle_max  = 1.0
 throttle_zero = -0.15
@@ -166,16 +163,20 @@ def set_steering( angle_to ) :
     
     duration = servo_duration
         
-    while abs( cen_angle - servo.angle ) > 1.0 :
-        diff = cen_angle - servo.angle
-        if abs( diff ) <= 1.0 :
-            servo.angle = cen_angle
-            sleep( duration )
-            break
+    while True :
+        diff = angle_to - servo.angle
+        inc = diff if abs( diff ) < 2.0 else diff/2.0
+
+        if angle_min <= servo.angle + inc <= angle_max :
+            servo.angle += inc
         else :
-            inc = diff/3.0
-            servo.angle += diff
-            sleep( duration )
+            servo.angle = angle_to
+        pass
+
+        sleep( duration )
+        
+        if abs( diff ) < 2.0 :
+            break
         pass
     pass
 pass

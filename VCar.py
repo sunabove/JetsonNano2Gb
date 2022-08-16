@@ -139,6 +139,9 @@ def set_throttle( throttle_to ) :
     global motor
 
     duration = motor_duration
+    throttle_to = min( throttle_max, max( throttle_min, throttle_to ) )
+    throttle_to = min( 1.0, max( -1.0, throttle_to ) )
+
     while True :
         diff = throttle_to - motor.throttle
         inc = diff if abs( diff ) < 0.1 else diff/3.0
@@ -162,6 +165,9 @@ def set_steering( angle_to ) :
     global servo
     
     duration = servo_duration
+
+    angle_to = min( angle_max, max( angle_min, angle_to ) )
+    angle_to = min( 180, max( 0, angle_to ) )
         
     while True :
         diff = angle_to - servo.angle
@@ -174,7 +180,7 @@ def set_steering( angle_to ) :
         pass
 
         sleep( duration )
-        
+
         if abs( diff ) < 2.0 :
             break
         pass

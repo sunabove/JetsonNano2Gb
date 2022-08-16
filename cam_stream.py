@@ -114,7 +114,7 @@ if __name__ == '__main__':
     capture_thread.start()
 
     try : 
-        app.run("0.0.0.0", port="8080")
+        app.run("0.0.0.0", port="8080", threaded=True)
     finally:
         print( "Shutting down now ..." )
         print( "Camera is closing now... ", flush=True )

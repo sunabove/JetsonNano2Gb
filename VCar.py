@@ -138,6 +138,8 @@ def start() :
     
     @app.before_request
     def before_request_func():
+        global capture_thread
+
         if capture_thread is None : 
             capture_thread = threading.Thread(target=capture_frames)
             capture_thread.daemon = True
@@ -155,53 +157,29 @@ def start() :
     pass 
 
     @app.route('/video')
-    def video_feed(): 
+    def video(): 
         return Response(encode_frame(), mimetype = "multipart/x-mixed-replace; boundary=frame") 
     pass 
 
     @app.route("/cmd", methods=['POST'] )
     def process_cmd():
-        global robot
+        global motor, servo
         
         cmd = request.form.get("cmd")
         val = request.form.get("val")
 
         log.info(f"cmd={cmd}, val={val}")
 
-        config = robot.config
-
-        if cmd in ( "stop", "servo_stop", "stop_service" ):
-            config[ "move" ] = False
-
-            robot.stop_robot()
-            robot.stop_servo()
-            robot.stop_service() 
-        elif cmd == "forward":
-            robot.forward()
-        elif cmd == "backward":
-            robot.backward()
-        elif cmd == "turn_left":
-            robot.left()
-        elif cmd == "turn_right":
-            robot.right()
-        elif cmd == "servo_left":
-            robot.servo_left()
-        elif cmd == "servo_right":
-            robot.servo_right()
-        elif cmd == "servo_up":
-            robot.servo_up()
-        elif cmd == "servo_down":
-            robot.servo_down()
-        elif cmd == "move" :
-            config[ "move" ] = not config[ "move" ] 
-
-            if not config[ "move" ] :
-                log.info( "romove move stop." )
-                sleep( 0.1 )
-                robot.stop()
+        if cmd == "stop" :
             pass
-            
-            log.info( f"move = {config['move']}")
+        elif cmd == "forward":
+            pass
+        elif cmd == "backward":
+            pass
+        elif cmd == "turn_left":
+            pass
+        elif cmd == "turn_right":
+            pass
         pass
 
         return "OK"
@@ -209,7 +187,7 @@ def start() :
 
     log.info( "## Normal WEB")
 
-    app.run(host='0.0.0.0', port=80, debug=False, threaded=True) 
+    app.run(host='0.0.0.0', port=8080, debug=False, threaded=True) 
 
     log.info( "Good bye!")
 pass # -- service

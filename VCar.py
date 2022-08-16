@@ -270,10 +270,11 @@ def start() :
             print( f"Result = {result}")
         elif cmd == "stop" :
             set_throttle( throttle_zero )
+            set_steering( angle_cen )
         elif cmd == "forward":
-            set_throttle( motor.throttle + (throttle_max - throttle_min)/20.0 )
+            set_throttle( motor.throttle + abs(throttle_max - throttle_min)/20.0 )
         elif cmd == "backward":
-            set_throttle( motor.throttle - (throttle_max - throttle_min)/20.0 )
+            set_throttle( motor.throttle - abs(throttle_max - throttle_min)/20.0 )
         elif cmd == "turn_left":
             set_steering( servo.angle + (angle_max - angle_min)/10.0 )
         elif cmd == "turn_right":

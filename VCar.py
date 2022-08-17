@@ -74,13 +74,15 @@ def process_image( image ) :
     angle = servo.angle
     angle_rel = angle - angle_cen
 
-    text = f"Thrrottle: max {throttle_max:.3f} zero {throttle_zero:.3f} min {throttle_min:.3f}"
+    text = f"Thrrotle: max {throttle_max:.3f} zero {throttle_zero:.3f} min {throttle_min:.3f}"
     texts.append( text )
 
     text = f"Throttle : abs {throttle:.2f} rel {throttle_rel:.2f}"
     texts.append( text )
     
-    text = f"Angle : abs {angle:.1f} rel {angle_rel:.1f}"
+    text = f"Angle : max {angle_max:.1f} cen {angle_cen:.1f} min {angle_min:.1f}"
+    texts.append( text )
+    
     text = f"Angle : abs {angle:.1f} rel {angle_rel:.1f}"
     texts.append( text )
 
@@ -151,9 +153,9 @@ angle_min = 45
 angle_max = 115
 angle_cen = int( (angle_min + angle_max)/2 )
 
-throttle_max  = 1.0
+throttle_max  = 0.5
 throttle_zero = -0.15
-throttle_min  = -1.0
+throttle_min  = -0.5
 throttle_to   = throttle_zero 
 
 throttle_req_no = 0 

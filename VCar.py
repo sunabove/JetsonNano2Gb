@@ -222,6 +222,9 @@ def stop():
         camera.release()
     pass
 
+    set_throttle( throttle_zero )
+    set_steering( angle_cen )
+
     if app is not None : 
         app.do_teardown_appcontext()
     pass
@@ -279,8 +282,7 @@ def start() :
             result = os.popen("sync && sync && sudo shutdown now").read().strip()
             print( f"Result = {result}")
         elif cmd == "stop" :
-            set_throttle( throttle_zero )
-            set_steering( angle_cen )
+            set_throttle( throttle_zero ) 
         elif cmd == "forward":
             if motor.throttle < throttle_zero -  0.01 :
                 set_throttle( throttle_zero )
@@ -290,7 +292,7 @@ def start() :
             pass
 
         elif cmd == "backward":
-            if motor.throttle > throttle_zero -  0.01 :
+            if motor.throttle > throttle_zero :
                 set_throttle( throttle_zero )
             else :
                 throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/3.0

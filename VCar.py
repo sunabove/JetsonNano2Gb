@@ -49,41 +49,26 @@ frame_cnt = 0
 def process_image( image ) :
     global frame_cnt, frame_no
 
-    text = f"FRM NO: {frame_cnt}/{frame_no}, Ratio = { (frame_cnt/frame_no)*100:3.1f} %" 
     tx = 10
     ty = 20
     th = 20   # line height
-    fg_color = (0, 255, 0) 
-    bg_color = (50, 50, 60)
-    putTextLine( image, text, tx, ty, fg_color, bg_color )
-
-    text = ""
-    pct = psutil.virtual_memory()[2]  # RAM 사용량 출력 
-    text += f"MEM : {pct:02.1f} %"
     
-    pct = psutil.cpu_percent() # CPU 사용량 출력 
-    text += f" CPU : {pct:03.1f} %"
-
-    ty += th
-    fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
-    putTextLine( image, text, tx, ty, fg_color, bg_color )
-
     texts = []
+    
     throttle = motor.throttle
     throttle_rel = throttle - throttle_zero
     angle = servo.angle
     angle_rel = angle - angle_cen
 
-    text = f"Thrrotle: max {throttle_max:.3f} zero {throttle_zero:.3f} min {throttle_min:.3f}"
-    texts.append( text )
-
-    text = f"Throttle : abs {throttle:.2f} rel {throttle_rel:.2f}"
+    text = f"Thrrotle: max {throttle_max:.3f} zero {throttle_zero:.3f} min {throttle_min:.3f}"    
+    text += f" abs {throttle:.2f} rel {throttle_rel:.2f}"
     texts.append( text )
     
     text = f"Angle : max {angle_max:.1f} cen {angle_cen:.1f} min {angle_min:.1f}"
+    text += f" abs {angle:.1f} rel {angle_rel:.1f}"
     texts.append( text )
-    
-    text = f"Angle : abs {angle:.1f} rel {angle_rel:.1f}"
+
+    text = f"FRM NO: {frame_cnt}/{frame_no}, Ratio = { (frame_cnt/frame_no)*100:3.1f} %" 
     texts.append( text )
 
     for text in texts :
@@ -91,6 +76,16 @@ def process_image( image ) :
         fg_color = (0, 255, 0)
         putTextLine( image, text, tx, ty, fg_color, bg_color )
     pass
+
+    ram_usage = psutil.virtual_memory()[2]  # RAM 사용량 출력 
+    cpu_usage = psutil.cpu_percent() # CPU 사용량 출력 
+    text = f"MEM : {ram_usage:02.1f} % CPU : {cpu_usage:03.1f} %"
+
+    ty += th
+    fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
+    putTextLine( image, text, tx, ty, fg_color, bg_color )
+
+    
 
     frame_cnt += 1
 

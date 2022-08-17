@@ -69,9 +69,16 @@ def process_image( image ) :
     putTextLine( image, text, tx, ty, fg_color, bg_color )
 
     throttle = motor.throttle
+    throttle_rel = throttle - throttle_zero
     angle = servo.angle
+    angle_rel = angle - angle_cen
 
-    text = f"Throttle: {throttle:.2f} Angle: {angle:.1f}"
+    text = f"Throttle : abs {throttle:.2f}, rel {throttle_rel:.2f}"
+    ty += th
+    fg_color = (0, 255, 0)
+    putTextLine( image, text, tx, ty, fg_color, bg_color )
+
+    text = f"Angle : abs {angle:.1f}, rel {angle_rel:.1f}"
     ty += th
     fg_color = (0, 255, 0)
     putTextLine( image, text, tx, ty, fg_color, bg_color )

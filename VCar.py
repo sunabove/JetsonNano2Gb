@@ -52,6 +52,8 @@ def process_image( image ) :
     tx = 10
     ty = 20
     th = 20   # line height
+    fg_color = (0, 255, 0)
+    bg_color = (255, 255, 255)
     
     texts = []
     
@@ -73,7 +75,6 @@ def process_image( image ) :
 
     for text in texts :
         ty += th
-        fg_color = (0, 255, 0)
         putTextLine( image, text, tx, ty, fg_color, bg_color )
     pass
 
@@ -84,8 +85,6 @@ def process_image( image ) :
     ty += th
     fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
     putTextLine( image, text, tx, ty, fg_color, bg_color )
-
-    
 
     frame_cnt += 1
 

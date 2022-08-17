@@ -47,12 +47,15 @@
 
 			$(window).keydown(function(event){
 				var keyCode = event.keyCode 
+
 				console.log( "keyCode = ", keyCode );
+
+				processed = false 
 
 				var arrow = { left: 37, up: 38, right: 39, down: 40, space: 32 };
 
 				if( keyCode == arrow.up ) {
-					$( "#forward" ).click()
+					$( "#forward" ).click()					
 				} else if( keyCode == arrow.down ) {
 					$( "#backward" ).click()
 				} else if( keyCode == arrow.left ) {
@@ -61,7 +64,14 @@
 					$( "#turn_right" ).click()
 				}  else if( keyCode == arrow.space ) {
 					$( "#stop" ).click()					
-				} 
+				}
+
+				if( ( 37 <= keyCode && keyCode <= 40 ) || keyCode == 32 ) {
+					event.preventDefault();
+					return false 
+				}
+				
+				return true
 			});
 
 			$( "#motor" ).click()

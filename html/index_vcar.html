@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VCAR(Vision Controlled Ai Robot)</title>
 	<link href="/bootstrap.min.css" rel="stylesheet" media="screen">
 	<script src="/jquery-3.6.0.min.js"></script>
@@ -75,14 +76,14 @@
 
 <body>
 
-<div id="container" class="container text-center" >
+<div id="container" class="container-fluid text-center" >
 	<br/>
-	<h4>Vision Controlled Ai Robot v1.0</h4>
+	<h4>Vision Controlled Ai Robot v1.0.1</h4>
 
 	<div class="container" class="text-center">
 		<div class="row">
 			<div class="col">
-				<img src="{{ url_for('video') }}" height="100%" />
+				<img src="{{ url_for('video') }}" width="100%" />
 			</div>
 		</div>
 	</div>

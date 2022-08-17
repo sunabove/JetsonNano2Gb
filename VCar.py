@@ -134,14 +134,21 @@ throttle_zero = -0.15
 throttle_min  = -1.0
 throttle_to   = throttle_zero 
 
+throttle_req_no = 0 
+servo_req_no = 0 
+
 def set_throttle( throttle_to ) : 
-    global motor
+    global motor, throttle_req_no
+
+    throttle_req_no += 1
+    
+    curr_req_no = throttle_req_no
 
     duration = motor_duration
     throttle_to = min( throttle_max, max( throttle_min, throttle_to ) )
     throttle_to = min( 1.0, max( -1.0, throttle_to ) )
 
-    while True :
+    while curr_req_no == throttle_req_no :
         if throttle_to < 0 and motor.throttle >= 0 :
             motor.throttle = -1.0
             sleep( duration )
@@ -169,14 +176,18 @@ def set_throttle( throttle_to ) :
 pass
 
 def set_steering( angle_to ) :
-    global servo
+    global servo, servo_req_no
+
+    servo_req_no += 1
+
+    curr_req_no = servo_req_no
     
     duration = servo_duration
 
     angle_to = min( angle_max, max( angle_min, angle_to ) )
     angle_to = min( 180, max( 0, angle_to ) )
         
-    while True :
+    while curr_req_no == servo_req_no :
         diff = angle_to - servo.angle
         inc = diff if abs( diff ) < 2.0 else ( 2.0*np.sign( diff ) )
 

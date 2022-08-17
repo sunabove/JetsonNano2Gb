@@ -83,7 +83,7 @@ def process_image( image ) :
     text = f"MEM : {ram_usage:02.1f} % CPU : {cpu_usage:03.1f} %"
 
     ty += th
-    fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
+    fg_color = (0, 0, 255) if cpu_usage >= 90 else (0, 255, 0)
     putTextLine( image, text, tx, ty, fg_color, bg_color )
 
     frame_cnt += 1

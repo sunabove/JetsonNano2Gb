@@ -147,9 +147,9 @@ angle_min = 45
 angle_max = 115
 angle_cen = int( (angle_min + angle_max)/2 )
 
-throttle_max  = 0.4
+throttle_max  = 0.3
 throttle_zero = -0.15
-throttle_min  = -0.4
+throttle_min  = - throttle_max
 throttle_to   = throttle_zero 
 
 throttle_req_no = 0 
@@ -312,10 +312,10 @@ def start() :
         elif cmd == "stop" :
             set_throttle( throttle_zero ) 
         elif cmd == "forward":
-            throttle_to = motor.throttle + abs(throttle_max - throttle_zero)/30.0
+            throttle_to = motor.throttle + abs(throttle_max - throttle_zero)/10.0
             set_throttle( throttle_to )
         elif cmd == "backward":
-            throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/10.0
+            throttle_to = motor.throttle - abs(throttle_zero - throttle_min)/5.0
             set_throttle( throttle_to )
         elif cmd == "turn_left":
             set_steering( servo.angle + (angle_max - angle_min)/10.0 )

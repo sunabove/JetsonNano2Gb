@@ -50,7 +50,7 @@ def process_image( image ) :
     global frame_cnt, frame_no
 
     tx = 10
-    ty = 20
+    ty = 0
     th = 20   # line height
     fg_color = (0, 255, 0)
     bg_color = (255, 255, 255)
@@ -62,7 +62,7 @@ def process_image( image ) :
     angle = servo.angle
     angle_rel = angle - angle_cen
 
-    text = f"Thrrotle: max {throttle_max:.3f} zero {throttle_zero:.3f} min {throttle_min:.3f}"    
+    text = f"Throt : max {throttle_max:.3f} zero {throttle_zero:.3f} min {throttle_min:.3f}"    
     text += f" abs {throttle:.2f} rel {throttle_rel:.2f}"
     texts.append( text )
     

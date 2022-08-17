@@ -44,7 +44,26 @@
                 });
             });
 
-			$( "#line_camera-tab" ).click()
+			$(window).keydown(function(event){
+				var keyCode = event.keyCode 
+				console.log( "keyCode = ", keyCode );
+
+				var arrow = { left: 37, up: 38, right: 39, down: 40, space: 32 };
+
+				if( keyCode == arrow.up ) {
+					$( "#forward" ).click()
+				} else if( keyCode == arrow.down ) {
+					$( "#backward" ).click()
+				} else if( keyCode == arrow.left ) {
+					$( "#turn_left" ).click()
+				} else if( keyCode == arrow.right ) {
+					$( "#turn_right" ).click()
+				}  else if( keyCode == arrow.space ) {
+					$( "#stop" ).click()					
+				} 
+			});
+
+			$( "#motor" ).click()
         });
 		
     </script>
@@ -63,7 +82,7 @@
 	<div class="container" class="text-center">
 		<div class="row">
 			<div class="col">
-				<img src="{{ url_for('video') }}" width="90%" />
+				<img src="{{ url_for('video') }}" height="100%" />
 			</div>
 		</div>
 	</div>

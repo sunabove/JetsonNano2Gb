@@ -66,10 +66,18 @@ def process_image( image ) :
 
     ty += th
     fg_color = (0, 0, 255) if pct >= 90 else (0, 255, 0)
-    bg_color = (50, 50, 60)
+    putTextLine( image, text, tx, ty, fg_color, bg_color )
+
+    throttle = motor.throttle
+    angle = servo.angle
+
+    text = f"Throttle: {throttle:.2f} Angle: {angle:.1f}"
+    ty += th
+    fg_color = (0, 255, 0)
     putTextLine( image, text, tx, ty, fg_color, bg_color )
 
     frame_cnt += 1
+
     return image
 pass
 

@@ -53,7 +53,7 @@ def process_image( image ) :
     ty = 0
     th = 20   # line height
     fg_color = (0, 255, 0)
-    bg_color = (255, 255, 255)
+    bg_color = (255, 0, 0)
     
     texts = []
     

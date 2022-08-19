@@ -45,7 +45,8 @@ def putTextLine(image, txt, x, y, fg_color=None, bg_color=None, font_size=0.4 ) 
     cv.putText(image, txt, (x, y), font, fs, fg_color, ft    , cv.LINE_AA) 
 pass # -- putTextLine
 
-frame_cnt = 0 
+frame_cnt = 0
+
 def process_image( image ) :
     global frame_cnt, frame_no
 
@@ -54,6 +55,7 @@ def process_image( image ) :
     th = 20   # line height
     fg_color = (0, 255, 0)
     bg_color = (255, 0, 0)
+    bg_color = (50, 50, 60)
     
     texts = []
     

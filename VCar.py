@@ -84,7 +84,7 @@ def process_image( image ) :
 
     ty += th
     fg_color = (0, 0, 255) if cpu_usage >= 90 else (0, 255, 0)
-    putTextLine( image, text, tx, ty, fg_color, bg_color )
+    putTextLine( image, text, tx, ty, fg_color, bg_color, font_size=0.5 )
 
     frame_cnt += 1
 

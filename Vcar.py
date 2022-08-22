@@ -155,7 +155,7 @@ angle_min = 45
 angle_max = 115
 angle_cen = int( (angle_min + angle_max)/2 )
 
-throttle_max  = 0.5
+throttle_max  = 0.3
 throttle_zero = -0.15
 throttle_min  = - throttle_max
 throttle_to   = throttle_zero 

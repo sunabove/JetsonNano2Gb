@@ -339,6 +339,10 @@ if __name__=='__main__':
     if 'stop' in sys.argv :
         stop()
     else :
+        # stop oled display service
+        result = os.popen("sudo systemctl stop oled_disp").read().strip
+        print( result )
+
         def signal_handler(signal, frame):
             print()
             print( '\nYou have pressed Ctrl-C.' ) 

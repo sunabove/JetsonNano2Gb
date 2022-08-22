@@ -9,6 +9,12 @@ log.basicConfig(
     datefmt='%Y-%m-%d:%H:%M:%S', level=log.INFO
     )
 
+# stop oled display service
+print( "stopping oled_disp service ...")
+result = os.popen("sudo systemctl stop oled_disp").read().strip()
+sleep( 5 )
+print( result )
+
 app = None
 
 ########## Camera #####################
@@ -149,7 +155,7 @@ angle_min = 45
 angle_max = 115
 angle_cen = int( (angle_min + angle_max)/2 )
 
-throttle_max  = 0.3
+throttle_max  = 0.5
 throttle_zero = -0.15
 throttle_min  = - throttle_max
 throttle_to   = throttle_zero 
@@ -339,10 +345,6 @@ if __name__=='__main__':
     if 'stop' in sys.argv :
         stop()
     else :
-        # stop oled display service
-        result = os.popen("sudo systemctl stop oled_disp").read().strip
-        print( result )
-
         def signal_handler(signal, frame):
             print()
             print( '\nYou have pressed Ctrl-C.' ) 
